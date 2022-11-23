@@ -5,6 +5,8 @@ SolarSystem::SolarSystem(const char *script)
     if (this->parseScript(script))
     {
         printf("Deu ruim no parser do sistema solar >_< \n");
+        // Aloca a memoria da stack com unique_ptr
+        this->centerStack = std::make_unique<std::stack<std::pair<vec3f_t, int>>>();
     }
 }
 
@@ -13,7 +15,7 @@ int SolarSystem::parseScript(const char *file_name)
     // Referência para o arquivo
     std::ifstream *file = new std::ifstream();
 
-    // Definindo varáveis
+    // Variaveis auxiliares
     vec3f_t mov_origem = {0};
 
     GLint lightEmissor = 0,
@@ -69,14 +71,22 @@ int SolarSystem::parseScript(const char *file_name)
 
     for (int i = 0; i < n_astros; i++)
     {
+        // limpa a flag de emissor de luz
         lightEmissor = 0;
-        if (n_luas)
+        mov_origem.x = 0;
+        mov_origem.y = 0;
+        mov_origem.z = 0;
+        
+        // Diminui a flag para analise de orbita
+        if (!n_luas)
         {
             // Obter o centro de movimento (x, y, z)
             file->getline(input_str, 30, ';');
             sscanf(input_str, "%f,%f,%f", &mov_origem.x, &mov_origem.y, &mov_origem.z);
-            n_luas--;
         }
+        else
+            n_luas--;
+
         // Obter os coeficientes "a" e "b" das elipses
         file->getline(input_str, 10, ';');
         sscanf(input_str, "%d", &elipse_a);
@@ -111,9 +121,14 @@ int SolarSystem::parseScript(const char *file_name)
         file->getline(input_str, 10, ';');
         sscanf(input_str, "%d", &n_luas);
 
-        if(n_luas)
+        // Cria o objeto como um corpo ou como emissor de luz
+        if (lightEmissor)
         {
-            
+            astros.push_back()
+        }
+        else
+        {
+
         }
     }
 
@@ -122,9 +137,45 @@ int SolarSystem::parseScript(const char *file_name)
 
 void SolarSystem::updateOnTime()
 {
-    for (int i = 0; i < astros.size(); i++)
+
+    vec3f_t *body_mov;
+
+    // Atualiza o movimento de todos os astros
+    for (int i = 0, aux_orbit = 0; i < astros.size(); i++)
     {
-        astros[i].move();
+        if (centerStack->empty())
+        {
+            // Movimenta o planeta com seu centro localizado em mov_center definido
+            astros[i]->move();
+        }
+        else
+        {
+            centerStack->top().second--;
+
+            astros[i]->move(body_mov);
+
+            // Verifica se ainda deve usar aquele centro
+            if (!centerStack->top().second)
+            {
+                // Desempilha aquele centro
+                centerStack->pop();
+                // Verifica se ainda há um centro a ser calculado
+                if (!centerStack->empty())
+                    body_mov = &centerStack->top().first;
+                else
+                    body_mov = NULL;
+            }
+        }
+
+        // Verifica se o planeta possui objetos que o orbitam
+        if (astros[i]->n_luas)
+        {
+            // Ira continuar na stack por n_luas
+            aux_orbit = astros[i]->n_luas;
+            body_mov = astros[i]->getOrigin();
+
+            centerStack->push(std::make_pair(*body_mov, aux_orbit));
+        }
     }
 }
 
@@ -138,12 +189,12 @@ void SolarSystem::updateOnDraw()
     for (int i = 0; i < astros.size(); i++)
     {
         // Verifica se o corpo interage com a luz
-        if (astros[i].isLight())
+        if (astros[i]->isLight())
         {
-            astros[i].draw();
+            astros[i]->draw();
         }
         else
-            nonReacting.push_back(&astros[i]);
+            nonReacting.push_back(astros[i].get());
     }
     glDisable(GL_LIGHTING);
 

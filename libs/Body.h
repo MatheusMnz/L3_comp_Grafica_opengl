@@ -51,7 +51,9 @@ public:
     ~Body();
     virtual void draw();
     void move();
+    void move(vec3f_t * aux_mov);
     bool isLight();
+    vec3f_t *getOrigin();
 };
 
 #endif

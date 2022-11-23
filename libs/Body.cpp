@@ -80,6 +80,22 @@ void Body::draw()
     glPopMatrix();
 }
 
+void Body::move(vec3f_t * aux_mov)
+{
+     // Soma ao angulo na translacao e na rotacao do Bodya
+    this->transl_angle += transl_vel;
+    this->rot_angle += ang_vel;
+
+    // Utiliza de coordenadas polares para descrever uma elipse
+    // X = a * cos (angulo) + x0
+    // Y = b * sen (angulo) + y0
+    // Z (Nao esta mexida, se for necessario, usa coordenada esferica ou cilindrica >_<
+
+    this->origin.x = aux_mov->x + elipse_a * cos(transl_vel * M_PI / 180.0f);
+    this->origin.y = aux_mov->y + elipse_b * sin(transl_vel * M_PI / 180.0f);
+    this->origin.z = 0;
+}
+
 void Body::move()
 {
     // Soma ao angulo na translacao e na rotacao do Bodya

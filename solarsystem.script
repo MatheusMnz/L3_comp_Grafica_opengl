@@ -1,7 +1,7 @@
 SISTEMA
 5
 # centro de movimento, elipse_a,elipse_b, velocidade de rotacao, velocidade de translacao, emissao de luz, numero de luas , script da textura 
-0.0,0.0;8;9;50.0;30.0;1;1;earth;
+0.0,0.0,0.0;8;9;50.0;30.0;1;1;earth;
 # Se colocar que tem alguma lua, descreva a lua logo em seguida sem utilizar as coordenadas de centro de movimento
 8;9;
 # Faca isso para todos os planetas >_<

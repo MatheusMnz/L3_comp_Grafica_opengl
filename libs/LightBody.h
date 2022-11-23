@@ -1,11 +1,16 @@
+#ifndef __LIGHTBODY__
+#define __LIGHTBODY__
+
 #include "Body.h"
 
 // Mesma coisa q um body, mas emite luz >_<
-class LightBody : Body
+class LightBody : public Body
 {
 private:
     GLuint lightFont;
-
+    float lightAmb[4];
+    float lightDif[4];
+    float lightSpec[4];
 
 public:
     using Body::Body;
@@ -17,10 +22,13 @@ public:
               double transl_vel,
               double elipse_a,
               double elipse_b,
-              float *matDif,
-              float *matSpec,
-              float *matShine,
+              int n_luas,
+              float *lightAmb,
+              float *lightDif,
+              float *lightSpec,
               GLuint lightFont);
 
     void draw() override;
 };
+
+#endif

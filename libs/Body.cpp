@@ -1,6 +1,25 @@
 #include "Body.h"
 #include <math.h>
 
+void solidSphere(int radius, int stacks, int columns)
+{
+    // cria uma quádrica
+    GLUquadric *quadObj = gluNewQuadric();
+    // estilo preenchido... poderia ser GLU_LINE, GLU_SILHOUETTE
+    // ou GLU_POINT
+    gluQuadricDrawStyle(quadObj, GLU_FILL);
+    // chama 01 glNormal para cada vértice.. poderia ser
+    // GLU_FLAT (01 por face) ou GLU_NONE
+    gluQuadricNormals(quadObj, GLU_SMOOTH);
+    // chama 01 glTexCoord por vértice
+    gluQuadricTexture(quadObj, GL_TRUE);
+    // cria os vértices de uma esfera
+    gluSphere(quadObj, radius, stacks, columns);
+    // limpa as variáveis que a GLU usou para criar
+    // a esfera
+    gluDeleteQuadric(quadObj);
+}
+
 Body::Body(const char *tex_name,
            vec3f_t origin,
            double raio,
@@ -9,9 +28,7 @@ Body::Body(const char *tex_name,
            double transl_vel,
            double elipse_a,
            double elipse_b,
-           float *matDif,
-           float *matSpec,
-           float *matShine, 
+           int n_luas,
            bool interactWithLight)
 {
     this->origin = origin;
@@ -23,9 +40,9 @@ Body::Body(const char *tex_name,
     this->elipse_a = elipse_a;
     this->elipse_b = elipse_b;
     this->interactWithLight = interactWithLight;
+    this->n_luas = n_luas;
 
-    // Gambs
-    this->texture = new Texturazer(tex_name, matDif, matSpec, matShine);
+    this->texture = new Texturazer(tex_name);
 }
 
 Body::~Body()
@@ -47,7 +64,7 @@ void Body::draw()
     // Rotaciona em torno do proprio eixo z
     glRotatef(this->rot_angle, 0, 0, 1);
 
-    // Muda o material do Bodya de acordo com os parametros da textura
+    // Muda o material do Body de acordo com os parametros da textura
     glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, this->texture->matDif);
     glMaterialfv(GL_FRONT, GL_SPECULAR, this->texture->matSpec);
     glMaterialfv(GL_FRONT, GL_SHININESS, this->texture->matShine);

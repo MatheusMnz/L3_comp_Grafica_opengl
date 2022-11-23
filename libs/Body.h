@@ -1,13 +1,6 @@
 #ifndef __BODY__
 #define __BODY__
 
-typedef struct vec3f
-{
-    float x;
-    float y;
-    float z;
-} vec3f_t;
-
 #include "Texturazer.h"
 
 // Parâmetros:
@@ -16,24 +9,7 @@ typedef struct vec3f
 // velocidade translação
 // reflexão da textura
 
-void solidSphere(int radius, int stacks, int columns)
-{
-    // cria uma quádrica
-    GLUquadric *quadObj = gluNewQuadric();
-    // estilo preenchido... poderia ser GLU_LINE, GLU_SILHOUETTE
-    // ou GLU_POINT
-    gluQuadricDrawStyle(quadObj, GLU_FILL);
-    // chama 01 glNormal para cada vértice.. poderia ser
-    // GLU_FLAT (01 por face) ou GLU_NONE
-    gluQuadricNormals(quadObj, GLU_SMOOTH);
-    // chama 01 glTexCoord por vértice
-    gluQuadricTexture(quadObj, GL_TRUE);
-    // cria os vértices de uma esfera
-    gluSphere(quadObj, radius, stacks, columns);
-    // limpa as variáveis que a GLU usou para criar
-    // a esfera
-    gluDeleteQuadric(quadObj);
-}
+void solidSphere(int radius, int stacks, int columns);
 
 // Constantes para desenho dos circulos
 #define DEF_STACKS 160
@@ -61,6 +37,7 @@ protected:
     GLuint interactWithLight;
 
 public:
+    int n_luas;
     Body(const char *tex_name,
          vec3f_t origin,
          double raio,
@@ -69,9 +46,7 @@ public:
          double transl_vel,
          double elipse_a,
          double elipse_b,
-         float *matDif,
-         float *matSpec,
-         float *matShine,
+         int n_luas,
          bool interactWithLight);
     ~Body();
     virtual void draw();

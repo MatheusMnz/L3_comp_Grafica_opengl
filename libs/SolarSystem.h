@@ -1,3 +1,9 @@
+#ifndef __SOLARSYSTEM__
+#define __SOLARSYSTEM__
+
+#include <vector>
+#include "Body.h"
+#include <iostream>
 
 class SolarSystem
 {
@@ -9,8 +15,7 @@ private:
     std::vector<Body *> nonReacting;
 
 public:
-
-    SolarSystem(const char * script_name);
+    SolarSystem(const char *script_name);
 
     // Parser para o script de sistema solar
     int parseScript(const char *script_name);
@@ -21,3 +26,5 @@ public:
     // Funcao para desenhar os astros
     void updateOnDraw();
 };
+
+#endif

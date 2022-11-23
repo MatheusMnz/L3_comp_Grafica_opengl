@@ -1,21 +1,18 @@
-#include "Body.h"
+// #include "Body.h"
 #include "Texturazer.h"
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string.h>
 
-// It belongs to Adjailson
-// By : Adjailson, the legend
 int Texturazer::parse_script(const char *file_name)
 {
 
     // Variáveis auxiliares
     std::ifstream *file = new std::ifstream();
-    vec3f_t aux = {0};
+    std::string input_caminho("assets/texture/");
     std::vector<vec3f_t> aux_cords;
 
+    // float aux_vet[4] = {0};
     char *input_str = (char *)malloc(sizeof(char) * 50);
+
+    vec3f_t aux = {0};
 
     int n_coordenadas,
         n_texturas;
@@ -82,7 +79,7 @@ int Texturazer::parse_script(const char *file_name)
         // Obtem o nome do arquivo de textura
         file->getline(input_str, 100);
         // printf("nome = %s\n", input_str);
-        std::string input_caminho("assets/texture/");
+
         input_caminho.append(input_str);
 
         // Carrega a textura usando a soil
@@ -92,11 +89,21 @@ int Texturazer::parse_script(const char *file_name)
         if (idTextura == 0)
         {
             printf("Erro do SOIL: '%s'\n", SOIL_last_result());
+            delete input_str;
+            delete file;
             return 1;
         }
         else
             this->loaded_textures.push_back(idTextura);
-    }
+    } 
+
+    // Carrega as propriedades do material
+    file->getline(input_str, 100);
+    sscanf(input_str, "%f;%f;%f", &matDif[0], &matDif[1], &matDif[2]);
+    file->getline(input_str, 100);
+    sscanf(input_str, "%f;%f;%f", &matSpec[0], &matSpec[1], &matSpec[2]);
+    file->getline(input_str, 100);
+    sscanf(input_str, "%f;%f;%f", &matShine[0], &matShine[1], &matShine[2]);
 
     delete input_str;
     delete file;
@@ -104,35 +111,15 @@ int Texturazer::parse_script(const char *file_name)
 }
 
 // construtor
-Texturazer::Texturazer(const char *script_name,
-
-                       float *matDif,
-                       float *matSpec,
-                       float *matShine)
+Texturazer::Texturazer(const char *script_name)
 {
+    memcpy(this->matDif, 0, sizeof(float) * 4);
+    memcpy(this->matSpec, 0, sizeof(float) * 4);
+    memcpy(this->matShine, 0, sizeof(float) * 4);
 
-    // Little Gambs, arrumar no projeto final
-
-    // // Tenta carregar a textura de acordo com o arquivo de script
-    // if (parse_script(script_name) == 1)
-    // {
-    //     printf("Arquivo de Textura [%s] Inexistente ou Inelegivel ! \n", script_name);
-    // }
-
-    // Carrega os valores do material direto
-    memcpy(this->matDif, matDif, sizeof(float) * 4);
-    memcpy(this->matSpec, matSpec, sizeof(float) * 4);
-    memcpy(this->matShine, matShine, sizeof(float) * 4);
-
-    // Carrega diretamente usando a soil, permite apenas um arquivo
-    // Carrega a textura usando a soil/
-    GLuint idTextura = SOIL_load_OGL_texture(script_name, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT);
-
-    // Verifica se ocorreu algum erro na SOIL
-    if (idTextura == 0)
+    // Tenta carregar a textura de acordo com o arquivo de script
+    if (parse_script(script_name) == 1)
     {
-        printf("Erro do SOIL: '%s'\n", SOIL_last_result());
+        printf("Arquivo de Textura [%s] Inexistente ou Inelegivel ! \n", script_name);
     }
-    else
-        this->loaded_textures.push_back(idTextura);
 }

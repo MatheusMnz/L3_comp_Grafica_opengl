@@ -6,7 +6,10 @@
 #include <GL/freeglut.h>
 
 // Development libs
+#include "libs/SolarSystem.h"
 #include "libs/callback.h"
+
+SolarSystem *sistemaSolar;
 
 void drawUpdate()
 {
@@ -16,9 +19,16 @@ void drawUpdate()
     // Carrega a identidade no sistema
     glLoadIdentity();
 
+    // Utiliza de coordenadas cilindricas para movimentar a camera
+    // x = origin.x + p*sin(θ)*cos(Φ)
+    // y = origin.y + p
+    // z = origin.z +p*cos(θ)*cos(Φ)
+
+    gluLookAt(0, 400, 1,
+              0, 0, 0,
+              0, 1, 0);
     // Desenha todas as esferas
-    // sistemaSolar.updateOnDraw();
-    
+    sistemaSolar->updateOnDraw();
 
     // Clean Code <3
     // Swap buffers >_<
@@ -28,7 +38,8 @@ void drawUpdate()
 void onTimeUpdate(int param)
 {
     // Movimenta as esferas
-
+    sistemaSolar->updateOnTime();
+    glutPostRedisplay();
     glutTimerFunc(param, onTimeUpdate, param);
 }
 
@@ -66,18 +77,31 @@ void configOpenGl()
     glEnable(GL_DEPTH_TEST);
 
     // Não mostrar faces do lado de dentro
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    glDisable(GL_CULL_FACE);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        // Esconder o ponteiro do mouse quando dentro da janela
+    // glutSetCursor(GLUT_CURSOR_NONE);
 
-    // Esconder o ponteiro do mouse quando dentro da janela
-    glutSetCursor(GLUT_CURSOR_NONE);
+    float globAmb[] = {0.15, 0.15, 0.15, 1.0};
+
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, false); // habilita local view
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globAmb);   // Luz ambiente global
+
+    glEnable(GL_COLOR_MATERIAL);
+
+    glEnable(GL_LIGHT0);
+}
+
+void initGame()
+{
+    sistemaSolar = new SolarSystem("solarsystem.sscp");
 }
 
 int main(int argc, char **argv)
 {
+    // Inicializa a glut
+    glutInit(&argc, argv);
+
     // Configura a janela da glut
     configGlut();
 
@@ -86,7 +110,9 @@ int main(int argc, char **argv)
 
     // Configura o OpenGl e a Iluminacao
     configOpenGl();
+
     // Inicializa os planetas
+    initGame();
 
     // Começa o loop principal
     glutMainLoop();

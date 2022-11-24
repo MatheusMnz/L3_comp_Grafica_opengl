@@ -95,7 +95,7 @@ int Texturazer::parse_script(const char *file_name)
         }
         else
             this->loaded_textures.push_back(idTextura);
-    } 
+    }
 
     // Carrega as propriedades do material
     file->getline(input_str, 100);
@@ -113,9 +113,11 @@ int Texturazer::parse_script(const char *file_name)
 // construtor
 Texturazer::Texturazer(const char *script_name)
 {
-    memcpy(this->matDif, 0, sizeof(float) * 4);
-    memcpy(this->matSpec, 0, sizeof(float) * 4);
-    memcpy(this->matShine, 0, sizeof(float) * 4);
+    memset(this->matDif, 0, sizeof(float) * 4);
+    memset(this->matSpec, 0, sizeof(float) * 4);
+    memset(this->matShine, 0, sizeof(float) * 4);
+
+    this->matDif[3] = this->matSpec[3] = this->matShine[3] = 1.0f;
 
     // Tenta carregar a textura de acordo com o arquivo de script
     if (parse_script(script_name) == 1)

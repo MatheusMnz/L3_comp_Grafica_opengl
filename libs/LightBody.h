@@ -11,7 +11,7 @@ private:
     float lightAmb[4];
     float lightDif[4];
     float lightSpec[4];
-
+    float lightSourcePos[4];
 public:
     using Body::Body;
     LightBody(const char *tex_name,

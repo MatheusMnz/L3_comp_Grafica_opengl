@@ -42,7 +42,15 @@ Body::Body(const char *tex_name,
     this->interactWithLight = interactWithLight;
     this->n_luas = n_luas;
 
+    this->transl_angle = 0;
+    this->rot_angle = 0;
+
     this->texture = new Texturazer(tex_name);
+
+    // Muda o material do Body de acordo com os parametros da textura
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, this->texture->matDif);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, this->texture->matSpec);
+    glMaterialfv(GL_FRONT, GL_SHININESS, this->texture->matShine);
 }
 
 Body::~Body()
@@ -57,19 +65,19 @@ void Body::draw()
 {
     glPushMatrix();
 
+    // printf("X = %0.2f | Y = %0.2f | Z = %0.2f \n",origin.x, origin.y, origin.z);
+
     // A origem é translada na move()
     // Usa de coordenadas de elipse para transladar
     glTranslatef(origin.x, origin.y, origin.z);
 
-    // Rotaciona em torno do proprio eixo z
-    glRotatef(this->rot_angle, 0, 0, 1);
+    // Rotaciona em torno do proprio eixo y
+    // Y é o eixo para cima nas coordenadas do OpenGl, logo rotaciona no Y
+    glRotatef(-this->rot_angle, 0, 1, 0);
 
-    // Muda o material do Body de acordo com os parametros da textura
-    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, this->texture->matDif);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, this->texture->matSpec);
-    glMaterialfv(GL_FRONT, GL_SHININESS, this->texture->matShine);
-
-    glColor3f(1.0, 1.0, 1.0);
+    // glColor3f(1.0, 1.0, 1.0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, this->texture->loaded_textures[0]);
@@ -80,36 +88,62 @@ void Body::draw()
     glPopMatrix();
 }
 
-void Body::move(vec3f_t * aux_mov)
-{
-     // Soma ao angulo na translacao e na rotacao do Bodya
-    this->transl_angle += transl_vel;
-    this->rot_angle += ang_vel;
-
-    // Utiliza de coordenadas polares para descrever uma elipse
-    // X = a * cos (angulo) + x0
-    // Y = b * sen (angulo) + y0
-    // Z (Nao esta mexida, se for necessario, usa coordenada esferica ou cilindrica >_<
-
-    this->origin.x = aux_mov->x + elipse_a * cos(transl_vel * M_PI / 180.0f);
-    this->origin.y = aux_mov->y + elipse_b * sin(transl_vel * M_PI / 180.0f);
-    this->origin.z = 0;
-}
-
-void Body::move()
+void Body::move(vec3f_t *aux_mov)
 {
     // Soma ao angulo na translacao e na rotacao do Bodya
     this->transl_angle += transl_vel;
     this->rot_angle += ang_vel;
 
+    // printf("%0.2f %0.2f \n", this->transl_angle, this->rot_angle);
+
+    if (transl_angle >= 360)
+    {
+        transl_angle -= 360;
+    }
+    if (rot_angle >= 360)
+    {
+        rot_angle -= 360;
+    }
     // Utiliza de coordenadas polares para descrever uma elipse
     // X = a * cos (angulo) + x0
     // Y = b * sen (angulo) + y0
     // Z (Nao esta mexida, se for necessario, usa coordenada esferica ou cilindrica >_<
 
-    this->origin.x = mov_center.x + elipse_a * cos(transl_vel * M_PI / 180.0f);
-    this->origin.y = mov_center.y + elipse_b * sin(transl_vel * M_PI / 180.0f);
-    this->origin.z = 0;
+    this->origin.x = aux_mov->x + elipse_a * cos(transl_angle * M_PI / 180.0f);
+    this->origin.y = 0;
+    this->origin.z = aux_mov->z + elipse_b * sin(transl_angle * M_PI / 180.0f);
+}
+
+void Body::move()
+{
+    // Soma ao angulo na translacao e na rotacao do Body
+    this->transl_angle += transl_vel;
+    this->rot_angle += ang_vel;
+
+    // printf("%0.2f %0.2f \n", this->transl_angle, this->rot_angle);
+
+    if (transl_angle >= 360)
+    {
+        transl_angle -= 360;
+    }
+    if (rot_angle >= 360)
+    {
+        rot_angle -= 360;
+    }
+
+    // Utiliza de coordenadas polares para descrever uma elipse
+    // X = a * cos (angulo) + x0
+    // Y = b * sen (angulo) + y0
+    // Z (Nao esta mexida, se for necessario, usa coordenada esferica ou cilindrica >_<
+
+    this->origin.x = mov_center.x + elipse_a * cos(transl_angle * M_PI / 180.0f);
+    this->origin.y = 0;
+    this->origin.z = mov_center.z + elipse_b * sin(transl_angle * M_PI / 180.0f);
+}
+
+vec3f_t *Body::getOrigin()
+{
+    return &this->origin;
 }
 
 bool Body::isLight()

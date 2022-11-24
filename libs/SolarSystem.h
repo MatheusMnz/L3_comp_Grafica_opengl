@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Body.h"
+#include "LightBody.h"
 #include <iostream>
 #include <memory>
 #include <stack>

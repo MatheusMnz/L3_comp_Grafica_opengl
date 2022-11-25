@@ -3,6 +3,8 @@
 
 #include "Body.h"
 
+extern GLfloat var_dif, var_amb, var_spec;
+
 // Mesma coisa q um body, mas emite luz >_<
 class LightBody : public Body
 {
@@ -12,6 +14,7 @@ private:
     float lightDif[4];
     float lightSpec[4];
     float lightSourcePos[4];
+
 public:
     using Body::Body;
     LightBody(const char *tex_name,
@@ -29,6 +32,9 @@ public:
               GLuint lightFont);
 
     void draw() override;
+    float *getLightDif();
+    float *getLightAmb();
+    float *getLightSpec();
 };
 
 #endif

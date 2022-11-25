@@ -8,6 +8,8 @@ SolarSystem::SolarSystem(const char *script)
     }
     // Aloca a memoria da stack com unique_ptr
     this->centerStack = std::make_unique<std::stack<std::pair<vec3f_t, int>>>();
+
+    skyBoxTexture = SOIL_load_OGL_texture("assets/texture/stars_milky_way.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT);
 }
 
 int SolarSystem::parseScript(const char *file_name)
@@ -232,8 +234,18 @@ void SolarSystem::updateOnTime()
     }
 }
 
+void SolarSystem::drawSkyBox()
+{
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, skyBoxTexture);
+
+    solidSphere(1800, DEF_STACKS, DEF_COLS);
+    glDisable(GL_TEXTURE_2D);
+}
+
 void SolarSystem::updateOnDraw()
 {
+
     // Limpa o vetor de objetos que nao reagem a luz
     nonReacting.clear();
 

@@ -20,6 +20,8 @@ private:
     // Stack para auxiliar na atualizacao do movimento dos astros
    std::unique_ptr<std::stack<std::pair<vec3f_t,int>>> centerStack;
 
+   int skyBoxTexture;
+
 public:
     SolarSystem(const char *script_name);
 
@@ -31,6 +33,8 @@ public:
 
     // Funcao para desenhar os astros
     void updateOnDraw();
+
+    void drawSkyBox();
 };
 
 #endif

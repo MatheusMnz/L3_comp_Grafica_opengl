@@ -58,12 +58,50 @@ void keyboardFct(unsigned char key, int x, int y)
             keyboard.space = 1;
         break;
 
+    case 'z':
+    case 'Z':
+        if (keyboard.z)
+        {
+            keyboard.z = 0;
+        }
+        else
+            keyboard.z = 1;
+        break;
     case 'x':
     case 'X':
         if (keyboard.x)
             keyboard.x = 0;
         else
             keyboard.x = 1;
+        break;
+
+    case 'c':
+    case 'C':
+        if (keyboard.c)
+            keyboard.c = 0;
+        else
+            keyboard.c = 1;
+        break;
+    case 'v':
+    case 'V':
+        if (keyboard.v)
+            keyboard.v = 0;
+        else
+            keyboard.v = 1;
+        break;
+    case 'b':
+    case 'B':
+        if (keyboard.b)
+            keyboard.b = 0;
+        else
+            keyboard.b = 1;
+        break;
+    case 'n':
+    case 'N':
+        if (keyboard.n)
+            keyboard.n = 0;
+        else
+            keyboard.n = 1;
         break;
     }
 }
@@ -109,9 +147,9 @@ static bool reshaping = 0;
 // Callback para redimensionamento
 void reshapeFct(int width, int height)
 {
-// #ifdef DEBUG
+    // #ifdef DEBUG
     printf("Reshape Callback [%s] : Width [%d] | Height [%d] \n", __func__, width, height);
-// #endif
+    // #endif
 
     if (width != prev_ww)
     {
@@ -119,7 +157,7 @@ void reshapeFct(int width, int height)
         if (((float)width / (float)height) != razaoAspecto && !reshaping)
         {
             reshaping = 1;
-            glutReshapeWindow(width, (int)(width * (1/razaoAspecto)));
+            glutReshapeWindow(width, (int)(width * (1 / razaoAspecto)));
         }
         else
             reshaping = 0;
@@ -146,7 +184,7 @@ void reshapeFct(int width, int height)
     max_x = 256 * razaoAspecto;
     max_y = 224;
 
-    glFrustum(-razaoAspecto,razaoAspecto,-1,1,1,1500);
+    glFrustum(-razaoAspecto, razaoAspecto, -1, 1, 1, 2300);
     // glOrtho(-max_x, max_x, -max_y, max_y, -1, 1);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();

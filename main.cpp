@@ -9,7 +9,37 @@
 #include "libs/SolarSystem.h"
 #include "libs/callback.h"
 
+#define FONTE GLUT_BITMAP_8_BY_13
+
 SolarSystem *sistemaSolar;
+
+void printText(void *font, char *string)
+{
+    char *c;
+    for (c = string; *c != '\0'; c++)
+        glutBitmapCharacter(font, *c);
+}
+
+void printInfo()
+{
+    glDisable(GL_LIGHTING);
+
+    char *aux_buffer = new char[80];
+
+    glRasterPos3f(-1.0 * razaoAspecto, 1.10, -2.0);
+    sprintf(aux_buffer, " -> Iluminação Ambiente (Z/x) : %0.2f", var_amb);
+    printText(FONTE, aux_buffer);
+
+    glRasterPos3f(-1.0 * razaoAspecto, 1.00, -2.0);
+    sprintf(aux_buffer, " -> Iluminação Difusa (C/v) : %0.2f", var_dif);
+    printText(FONTE, aux_buffer);
+
+    glRasterPos3f(-1.0 * razaoAspecto, 0.85, -2.0);
+    sprintf(aux_buffer, " -> Iluminação Especular (B/n) : %0.2f", var_spec);
+    printText(FONTE, aux_buffer);
+
+    delete aux_buffer;
+}
 
 void drawUpdate()
 {
@@ -23,10 +53,14 @@ void drawUpdate()
     // x = origin.x + p*sin(θ)*cos(Φ)
     // y = origin.y + p
     // z = origin.z +p*cos(θ)*cos(Φ)
+    printInfo();
 
-    gluLookAt(0, 400, 1,
+    gluLookAt(0, 300, -320,
               0, 0, 0,
               0, 1, 0);
+
+    sistemaSolar->drawSkyBox();
+
     // Desenha todas as esferas
     sistemaSolar->updateOnDraw();
 
@@ -79,7 +113,7 @@ void configOpenGl()
     // Não mostrar faces do lado de dentro
     glDisable(GL_CULL_FACE);
 
-        // Esconder o ponteiro do mouse quando dentro da janela
+    // Esconder o ponteiro do mouse quando dentro da janela
     // glutSetCursor(GLUT_CURSOR_NONE);
 
     float globAmb[] = {0.15, 0.15, 0.15, 1.0};
